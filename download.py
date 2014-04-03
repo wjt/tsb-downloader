@@ -117,9 +117,15 @@ def download_range(br, from_date, to_date):
     info = response.info()
 
     if info.gettype() != 'application/csv':
-        print info.headers
-        print response.getcode()
-        print response.read()
+        html = response.read()
+        try:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(html)
+            for div in soup.findAll('div', {'class': 'formSubmitError'}):
+                print div
+        except ImportError:
+            print html
+
         raise Exception('Did not get a CSV back (maybe there are more than 150 transactions?)')
 
     disposition = info.getheader('Content-Disposition')

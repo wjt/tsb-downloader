@@ -85,9 +85,13 @@ def download(user_id, date_ranges=[], export_format=None, debug=False):
     export_link = br.find_link(text='Export')
     br.follow_link(export_link)
 
+    export_url = br.geturl()
+
     for (from_date, to_date) in date_ranges:
         for (f, t) in split_range(from_date, to_date):
-            download_range(br, f, t)
+            br.open(export_url)
+            download_range(br, f, t, export_format)
+
 
 def split_range(from_date, to_date):
     THREE_MONTHS = datetime.timedelta(days=(28 * 3))
@@ -146,8 +150,6 @@ def download_range(br, from_date, to_date):
 
     else:
         raise Exception('Missing "Content-Disposition: attachment" header')
-
-    br.back()
 
 def parse_date(string):
     try:

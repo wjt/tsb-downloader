@@ -4,6 +4,7 @@ Outputs a CSV, pipe it somewhere or something.
 """
 
 import argparse
+import bs4
 import collections
 import datetime
 import getpass
@@ -139,13 +140,14 @@ def download_range(br, from_date, to_date, export_format):
 
     if info.gettype() != export_format.mime:
         html = response.read()
-        try:
-            from bs4 import BeautifulSoup
-            soup = BeautifulSoup(html)
-            for div in soup.findAll('div', {'class': 'formSubmitError'}):
-                print div
-        except ImportError:
-            print html
+        soup = bs4.BeautifulSoup(html)
+        for div in soup.findAll('div', {'class': 'formSubmitError'}):
+            print div.text
+
+            if div.text.startswith(u'8000007'):
+                # 8000007 : We're sorry, but we didn't find any transactions that match your search
+                # criteria. Please try another search.
+                return
 
         raise Exception(
             'Got {} back rather than {} ({}) (maybe there are more than 150 transactions?)'.format(

@@ -32,7 +32,8 @@ You will need:
 
 1. Python 2.7.9 or greater
 2. The mechanize module (apt-get install python-mechanize)
-3. A Lloyds Bank account
+3. The beautifulsoup4 module (apt-get install python-bs4)
+4. A Lloyds Bank account
 
 License
 -------

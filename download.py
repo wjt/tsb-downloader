@@ -23,9 +23,10 @@ def extract(data, before, after):
     end   = data.index(after, start)
     return data[start:end]
 
-def download(user_id, date_ranges=[]):
+def download(user_id, date_ranges=[], export_format=None, debug=False):
     # a new browser and open the login page
     br = mechanize.Browser()
+    br.set_debug_http(debug)
     br.set_handle_robots(False)
     br.addheaders = [('User-agent', 'LBG Statement Downloader http://github.com/bitplane/tsb-downloader')]
 
@@ -191,6 +192,7 @@ if __name__=='__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--user-id', type=int, required=True)
+    parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('date_ranges', nargs='+', metavar='YYYY/MM/DD--YYYY/MM/DD',
                         type=parse_date_range,
                         help="""One or more date ranges to download statements
@@ -201,4 +203,6 @@ if __name__=='__main__':
 
     args = parser.parse_args()
 
-    download(user_id=args.user_id, date_ranges=args.date_ranges)
+    download(user_id=args.user_id,
+             date_ranges=args.date_ranges,
+             debug=args.debug)

@@ -8,6 +8,8 @@ import datetime
 import getpass
 import mechanize
 import os.path
+import sys
+
 
 def prompt(prompt, password=False):
     if password:
@@ -169,7 +171,24 @@ def parse_date_range(string):
 
     return (from_date, to_date)
 
+
+def require_secure_urllib():
+    # https://docs.python.org/2/whatsnew/2.7.html#pep-476-enabling-certificate-verification-by-default-for-stdlib-http-clients
+    min_version_2 = (2, 7, 9)
+    # https://docs.python.org/3/whatsnew/3.4.html#pep-476-enabling-certificate-verification-by-default-for-stdlib-http-clients
+    min_version_3 = (3, 4, 3)
+
+    min_version = min_version_2 if sys.version_info.major == 2 else min_version_3
+
+    if sys.version_info < min_version:
+        sys.stderr.write('ERROR: this Python version does not check SSL certificates!\n')
+        sys.stderr.write('Come back with Python {}.{}.{} or newer.\n'.format(*min_version))
+        exit(2)
+
+
 if __name__=='__main__':
+    require_secure_urllib()
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--user-id', type=int, required=True)
     parser.add_argument('date_ranges', nargs='+', metavar='YYYY/MM/DD--YYYY/MM/DD',

@@ -20,11 +20,8 @@ function isn't suited to bulk exports:
 Clearly this will not do. The idea of this script is to download your account
 history to a CSV file without having to dedicate a weekend to the task.
 
-This tool is somewhat usable but not yet finished. Most importantly it **cannot 
-be used from an untrusted Internet connection as urllib does not support checking 
-SSL certificates.**
-
-For bugs and todo list, see the tracker:
+This tool is somewhat usable but not yet finished.  For bugs and todo list, see
+the tracker:
 
 https://github.com/bitplane/tsb-downloader/issues
 
@@ -33,13 +30,13 @@ Ingredients
 
 You will need:
 
-1. Python 2.7.x or greater
+1. Python 2.7.9 or greater
 2. The mechanize module (apt-get install python-mechanize)
 3. A Lloyds Bank account
 
 License
 -------
-Copyright (c) 2013 Gaz Davidson <gaz@bitplane.net>,
+Copyright © 2013–2015 Gaz Davidson <gaz@bitplane.net>,
                    Will Thompson <will@willthompson.co.uk>
 
 Licensed under the [WTFPL](http://en.wikipedia.org/wiki/WTFPL) with one

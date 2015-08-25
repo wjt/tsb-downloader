@@ -4,6 +4,7 @@ Outputs a CSV, pipe it somewhere or something.
 """
 
 import argparse
+import collections
 import datetime
 import getpass
 import mechanize
@@ -105,7 +106,18 @@ def split_range(from_date, to_date):
 
     yield (from_date, to_date)
 
-def download_range(br, from_date, to_date):
+
+Format = collections.namedtuple('Format', 'extension mime value')
+formats = {
+    f.extension: f
+    for f in [
+        Format('csv', 'application/csv', 'Internet banking text/spreadsheet (.CSV)'),
+        Format('qif', 'text/x-qif', 'Quicken 98 and 2000 and Money (.QIF)'),
+    ]
+}
+
+
+def download_range(br, from_date, to_date, export_format):
     print br.title()
     print 'Exporting {0} to {1}'.format(from_date, to_date)
     br.select_form(name='frmTest')
@@ -120,10 +132,12 @@ def download_range(br, from_date, to_date):
     setDate('frmTest:dtSearchFromDate', from_date)
     setDate('frmTest:dtSearchToDate', to_date)
 
+    br['frmTest:strExportFormatSelected'] = [export_format.value]
+
     response = br.submit()
     info = response.info()
 
-    if info.gettype() != 'application/csv':
+    if info.gettype() != export_format.mime:
         html = response.read()
         try:
             from bs4 import BeautifulSoup
@@ -133,7 +147,9 @@ def download_range(br, from_date, to_date):
         except ImportError:
             print html
 
-        raise Exception('Did not get a CSV back (maybe there are more than 150 transactions?)')
+        raise Exception(
+            'Got {} back rather than {} ({}) (maybe there are more than 150 transactions?)'.format(
+                info.gettype(), export_format.extension, export_format.mime))
 
     disposition = info.getheader('Content-Disposition')
     PREFIX='attachment; filename='
@@ -194,6 +210,7 @@ if __name__=='__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--user-id', type=int, required=True)
+    parser.add_argument('-f', '--format', type=str, choices=formats.keys(), default='csv')
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('date_ranges', nargs='+', metavar='YYYY/MM/DD--YYYY/MM/DD',
                         type=parse_date_range,
@@ -207,4 +224,5 @@ if __name__=='__main__':
 
     download(user_id=args.user_id,
              date_ranges=args.date_ranges,
+             export_format=formats[args.format],
              debug=args.debug)

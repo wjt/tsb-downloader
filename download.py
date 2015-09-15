@@ -140,7 +140,7 @@ def download_range(br, from_date, to_date, export_format):
 
     if info.gettype() != export_format.mime:
         html = response.read()
-        soup = bs4.BeautifulSoup(html)
+        soup = bs4.BeautifulSoup(html, 'html.parser')
         for div in soup.findAll('div', {'class': 'formSubmitError'}):
             print div.text
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Download transaction history from Lloyds Bank website
 Outputs a CSV, pipe it somewhere or something.
 """
